@@ -11,7 +11,7 @@ class Player:
         self.velocity = 5
         self.y_velocity = 0
         self.gravity = 0.5
-        self.jump_strength = -10
+        self.jump_strength = -15
         self.on_ground = False
         self.controls = controls
         self.health = 100
@@ -64,13 +64,18 @@ class Player:
 
     def collides_with_diagonal(self, platform):
         """
-        Check if the player collides with a diagonal platform.
+        Check if the player is close enough to interact with a diagonal platform.
         """
         player_bottom = self.rect.bottom
         platform_y = platform.get_y_at_x(self.rect.centerx)
 
-        # Check if the player's bottom is on the platform's line
-        return platform.y_min <= player_bottom <= platform.y_max and platform.contains_x(self.rect.centerx)
+        # Add a tolerance to allow for smoother interaction
+        tolerance = 5  # Pixels of tolerance for smoother interaction
+
+        return (
+                platform.contains_x(self.rect.centerx)
+                and platform.y_min - tolerance <= player_bottom <= platform_y + tolerance
+        )
 
     def jump(self, keys):
         """

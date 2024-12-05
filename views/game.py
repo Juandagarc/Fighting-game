@@ -34,16 +34,18 @@ player2 = Player(1130, 300, 50, 100, (0, 0, 255), player2_controls)
 # Define walls, floors, and diagonal platforms
 colliders = [
     pygame.Rect(0, 680, 1280, 40),  # Floor
-    pygame.Rect(200, 500, 200, 20),  # Platform 1
-    pygame.Rect(800, 400, 200, 20),  # Platform 2
-    pygame.Rect(600, 300, 100, 20),  # Small platform
+    pygame.Rect(200, 600, 200, 20),
+    pygame.Rect(450, 550, 320, 20),
+    pygame.Rect(60, 630, 170, 20),
     pygame.Rect(0, 0, 10, 720),  # Left wall
     pygame.Rect(1270, 0, 10, 720),  # Right wall
 ]
 
 diagonal_platforms = [
-    DiagonalPlatform(400, 600, 600, 500),  # Example diagonal platform
-    DiagonalPlatform(800, 200, 1000, 300),  # Another diagonal platform
+    DiagonalPlatform(170, 630, 200, 600),
+    DiagonalPlatform(400, 600, 450, 550),
+    DiagonalPlatform(0, 700, 60, 630),
+    DiagonalPlatform(800, 200, 1000, 300),
 ]
 
 
