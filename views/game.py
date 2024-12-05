@@ -42,8 +42,9 @@ colliders = [
 ]
 
 diagonal_platforms = [
-    DiagonalPlatform(170, 630, 200, 600),
+    DiagonalPlatform(70, 730, 200, 600),
     DiagonalPlatform(400, 600, 450, 550),
+DiagonalPlatform(500, 730, 800, 600),
     DiagonalPlatform(0, 700, 60, 630),
     DiagonalPlatform(800, 200, 1000, 300),
 ]
@@ -68,24 +69,25 @@ def render_game(screen):
     keys = pygame.key.get_pressed()
 
     # Update players
-    player1.move(keys, colliders)
+    player1.move(keys, colliders)  # Movimiento horizontal
+    player1.apply_gravity(colliders, diagonal_platforms)  # Maneja gravedad y plataformas diagonales
     player1.jump(keys)
-    player1.apply_gravity(colliders, diagonal_platforms)
     player1.defend(keys)
     player1.attack(keys)
 
-    player2.move(keys, colliders)
+    player2.move(keys, colliders)  # Movimiento horizontal
+    player2.apply_gravity(colliders, diagonal_platforms)  # Maneja gravedad y plataformas diagonales
     player2.jump(keys)
-    player2.apply_gravity(colliders, diagonal_platforms)
     player2.defend(keys)
     player2.attack(keys)
 
-    # Draw players
+    # Render players
     player1.draw(screen)
     player2.draw(screen)
 
-    # Draw colliders (debugging)
+    # Render colliders (debugging)
     render_colliders(screen, colliders, diagonal_platforms)
+
 
 
 def draw_text(screen, text, color, x, y, font_size):

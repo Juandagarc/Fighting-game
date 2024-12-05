@@ -49,18 +49,30 @@ class Player:
                 self.rect.bottom = collider.top
                 self.y_velocity = 0
                 self.on_ground = True
-                break
-        else:
-            self.on_ground = False
+                return
 
-        # Check for collisions with diagonal platforms
+        # Check for interactions with diagonal platforms
         for platform in diagonal_platforms:
-            if self.y_velocity > 0:  # Only collide when falling
-                if self.collides_with_diagonal(platform):
-                    self.rect.bottom = platform.get_y_at_x(self.rect.centerx)
+            # Check bottom-left corner
+            platform_y_left = platform.get_y_at_x(self.rect.left)
+            if platform.contains_x(self.rect.left) and platform_y_left is not None:
+                if self.rect.bottom >= platform_y_left - 1:  # Slight tolerance for touch
+                    self.rect.bottom = platform_y_left - 1  # Align to the ramp
                     self.y_velocity = 0
                     self.on_ground = True
-                    break
+                    return
+
+            # Check bottom-right corner
+            platform_y_right = platform.get_y_at_x(self.rect.right)
+            if platform.contains_x(self.rect.right) and platform_y_right is not None:
+                if self.rect.bottom >= platform_y_right - 1:  # Slight tolerance for touch
+                    self.rect.bottom = platform_y_right - 1  # Align to the ramp
+                    self.y_velocity = 0
+                    self.on_ground = True
+                    return
+
+        # If no collisions, player is in the air
+        self.on_ground = False
 
     def collides_with_diagonal(self, platform):
         """
@@ -69,12 +81,12 @@ class Player:
         player_bottom = self.rect.bottom
         platform_y = platform.get_y_at_x(self.rect.centerx)
 
-        # Add a tolerance to allow for smoother interaction
+        # Ensure the player is slightly above the platform
         tolerance = 5  # Pixels of tolerance for smoother interaction
 
         return (
-                platform.contains_x(self.rect.centerx)
-                and platform.y_min - tolerance <= player_bottom <= platform_y + tolerance
+            platform.contains_x(self.rect.centerx)
+            and platform_y - tolerance <= player_bottom <= platform_y + tolerance
         )
 
     def jump(self, keys):
@@ -124,7 +136,6 @@ class Player:
         pygame.draw.rect(screen, (255, 0, 0), (self.rect.x, self.rect.y - 15, health_bar_width, health_bar_height))
         pygame.draw.rect(screen, (0, 255, 0), (self.rect.x, self.rect.y - 15, health_bar_width * health_ratio, health_bar_height))
 
-
 class DiagonalPlatform:
     def __init__(self, x1, y1, x2, y2):
         """
@@ -139,6 +150,8 @@ class DiagonalPlatform:
         """
         Get the y-coordinate on the platform for a given x-coordinate.
         """
+        if not self.contains_x(x):
+            return None  # Return None if x is out of bounds
         return self.slope * x + self.y_intercept
 
     def contains_x(self, x):
@@ -146,17 +159,3 @@ class DiagonalPlatform:
         Check if the x-coordinate is within the bounds of the platform.
         """
         return self.x1 <= x <= self.x2
-
-    @property
-    def y_min(self):
-        """
-        Get the minimum y-coordinate of the platform.
-        """
-        return min(self.y1, self.y2)
-
-    @property
-    def y_max(self):
-        """
-        Get the maximum y-coordinate of the platform.
-        """
-        return max(self.y1, self.y2)
