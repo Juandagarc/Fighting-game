@@ -66,7 +66,7 @@ def render_menu(screen):
     screen.blit(background_image, (0, 0))
 
     # Draw the title
-    draw_text(screen, "SAMURAIS vs KNIGHTS", title_font, WHITE, 600, 140)  # Centered title
+    draw_text(screen, "SAMURAIS WARS", title_font, WHITE, 600, 140)  # Centered title
 
     # Define buttons
     buttons = [

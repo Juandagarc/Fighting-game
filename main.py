@@ -10,6 +10,12 @@ screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Fighting Game")
 clock = pygame.time.Clock()
 
+# Cargar música de fondo
+music_path = os.path.join(os.path.dirname(__file__), "assets/musica.mp3")
+pygame.mixer.music.load(music_path)
+pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen (0.0 a 1.0)
+pygame.mixer.music.play(-1)  # Reproducir en bucle infinito
+
 # Cargar recursos (sprites, sonidos, etc.)
 current_dir = os.path.dirname(__file__)
 
