@@ -18,6 +18,8 @@ class Player:
         self.jump_strength = -15
         self.on_ground = False
 
+        self.facing_left = False  # Nueva bandera para determinar la dirección
+
         # Animations for different states
         self.sprite_sheets = sprite_sheets
         self.frame_width = frame_width
@@ -33,7 +35,6 @@ class Player:
         self.current_frame = 0
         self.animation_speed = animation_speed
         self.frame_counter = 0
-
 
     def _load_frames(self, sprite_sheet):
         """
@@ -98,6 +99,7 @@ class Player:
         """
         if keys[self.controls["left"]]:
             self.rect.x -= self.velocity
+            self.facing_left = True  # Actualiza la dirección del jugador
             for collider in colliders:
                 if self.rect.colliderect(collider):
                     self.rect.left = collider.right
@@ -105,6 +107,7 @@ class Player:
 
         if keys[self.controls["right"]]:
             self.rect.x += self.velocity
+            self.facing_left = False  # Actualiza la dirección del jugador
             for collider in colliders:
                 if self.rect.colliderect(collider):
                     self.rect.right = collider.left
@@ -204,6 +207,10 @@ class Player:
         else:
             print(f"Warning: No frames available for animation state '{self.current_animation}'")
             return  # Evitar dibujar si no hay fotogramas disponibles
+
+        # Hacer espejo si el jugador está mirando hacia la izquierda
+        if self.facing_left:
+            frame = pygame.transform.flip(frame, True, False)
 
         # Dibujar el fotograma
         sprite_x = self.rect.centerx - frame.get_width() // 2
