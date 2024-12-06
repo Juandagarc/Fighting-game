@@ -6,7 +6,7 @@ class Player:
         """
         Initialize the player object.
         """
-        self.rect = pygame.Rect(x, y, width, height)
+        self.rect = pygame.Rect(x, y, width-100, height)
         self.color = color
         self.velocity = 5
         self.y_velocity = 0
@@ -42,10 +42,11 @@ class Player:
         """
         Applies gravity and handles collision with floors and diagonal platforms.
         """
+        # Aplicar gravedad
         self.y_velocity += self.gravity
         self.rect.y += self.y_velocity
 
-        # Check for collisions with floors (only when falling)
+        # Verificar colisión con plataformas normales
         for collider in colliders:
             if self.rect.colliderect(collider) and self.y_velocity > 0:
                 self.rect.bottom = collider.top
@@ -53,35 +54,37 @@ class Player:
                 self.on_ground = True
                 return
 
-        # Check for interactions with diagonal platforms
+        # Verificar interacción con plataformas diagonales
         for platform in diagonal_platforms:
-            # Check bottom-left corner
+            # Calcular las alturas en las esquinas de la hitbox
             platform_y_left = platform.get_y_at_x(self.rect.left)
-            if (
-                    platform.contains_x(self.rect.left)
-                    and platform_y_left is not None
-                    and self.rect.bottom >= platform_y_left - 5  # Tolerance to align with ramp
-                    and self.rect.bottom <= platform_y_left + 10  # Ensure no snapping from below
-            ):
-                self.rect.bottom = platform_y_left
-                self.y_velocity = 0
-                self.on_ground = True
-                return
-
-            # Check bottom-right corner
             platform_y_right = platform.get_y_at_x(self.rect.right)
-            if (
-                    platform.contains_x(self.rect.right)
-                    and platform_y_right is not None
-                    and self.rect.bottom >= platform_y_right - 5  # Tolerance to align with ramp
-                    and self.rect.bottom <= platform_y_right + 10  # Ensure no snapping from below
-            ):
-                self.rect.bottom = platform_y_right
-                self.y_velocity = 0
-                self.on_ground = True
-                return
 
-        # If no collisions, player is in the air
+            # Verificar si la hitbox del jugador está en el rango horizontal de la rampa
+            if platform.contains_x(self.rect.left) or platform.contains_x(self.rect.right):
+                # Caso: la esquina izquierda está en la rampa
+                if (
+                        platform_y_left is not None
+                        and self.rect.bottom >= platform_y_left - 5
+                        and self.rect.bottom <= platform_y_left + 10
+                ):
+                    self.rect.bottom = platform_y_left
+                    self.y_velocity = 0
+                    self.on_ground = True
+                    return
+
+                # Caso: la esquina derecha está en la rampa
+                if (
+                        platform_y_right is not None
+                        and self.rect.bottom >= platform_y_right - 5
+                        and self.rect.bottom <= platform_y_right + 10
+                ):
+                    self.rect.bottom = platform_y_right
+                    self.y_velocity = 0
+                    self.on_ground = True
+                    return
+
+        # Si no está tocando ninguna plataforma, el jugador está en el aire
         self.on_ground = False
 
     def collides_with_diagonal(self, platform):
@@ -163,7 +166,7 @@ class Player:
         """
         Initialize the player object with animation.
         """
-        self.rect = pygame.Rect(x, y, frame_width, frame_height)
+        self.rect = pygame.Rect(x, y, frame_width-10, frame_height)
         self.controls = controls
         self.health = 100
         self.is_attacking = False
@@ -185,19 +188,27 @@ class Player:
         self.animation_speed = animation_speed
         self.frame_counter = 0
 
-
     def _load_frames(self):
-            """
-            Extract individual frames from the sprite sheet.
-            """
-            sheet_width = self.sprite_sheet.get_width()
-            frames = []
+        """
+        Extract individual frames from the sprite sheet and resize them to be 5 times larger than the hitbox.
+        """
+        sheet_width = self.sprite_sheet.get_width()
+        sheet_height = self.sprite_sheet.get_height()
+        frames = []
 
-            for x in range(0, sheet_width, self.frame_width):
-                frame = self.sprite_sheet.subsurface((x, 0, self.frame_width, self.frame_height))
-                frames.append(frame)
+        # Dimensiones escaladas
+        scaled_width = self.rect.width * 3
+        scaled_height = self.rect.height * 3
 
-            return frames
+        for x in range(0, sheet_width, self.frame_width):
+            # Extraer el fotograma original
+            frame = self.sprite_sheet.subsurface((x, 0, self.frame_width, self.frame_height))
+
+            # Redimensionar el fotograma al tamaño escalado
+            resized_frame = pygame.transform.scale(frame, (scaled_width, scaled_height))
+            frames.append(resized_frame)
+
+        return frames
 
     def update_animation(self):
         """
@@ -310,15 +321,20 @@ class Player:
 
     def draw(self, screen):
         """
-        Draw the current animation frame at the player's position.
+        Draw the current animation frame at the player's position, scaled 5x larger than the hitbox.
         """
+        # Actualizar la animación
         self.update_animation()
-        frame = self.frames[self.current_frame]
-        screen.blit(frame, (self.rect.x, self.rect.y))
 
-        # Draw health bar
-        health_bar_width = 50
-        health_bar_height = 10
-        health_ratio = self.health / 100
-        pygame.draw.rect(screen, (255, 0, 0), (self.rect.x, self.rect.y - 15, health_bar_width, health_bar_height))
-        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x, self.rect.y - 15, health_bar_width * health_ratio, health_bar_height))
+        # Obtener el fotograma actual
+        frame = self.frames[self.current_frame]
+
+        # Calcular posición para centrar el sprite con respecto a la hitbox
+        sprite_x = self.rect.centerx - frame.get_width() // 2
+        sprite_y = self.rect.bottom - (frame.get_height() - 50)
+
+        # Dibujar el sprite escalado
+        screen.blit(frame, (sprite_x, sprite_y))
+
+        # Dibujar la hitbox (opcional, para depuración)
+        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)  # Borde rojo

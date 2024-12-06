@@ -35,11 +35,11 @@ player2_controls = {
 
 # Definir paredes, pisos y plataformas diagonales
 colliders = [
-    pygame.Rect(200, 600, 150, 20),
-    pygame.Rect(450, 550, 250, 20),
-    pygame.Rect(60, 630, 60, 20),
-    pygame.Rect(800, 500, 270, 20),
-    pygame.Rect(1170, 550, 10, 20),
+    pygame.Rect(200, 600, 110, 20),
+    pygame.Rect(450, 550, 210, 20),
+    pygame.Rect(60, 630, 26, 20),
+    pygame.Rect(800, 500, 260, 20),
+    pygame.Rect(1200, 550, 10, 20),
     pygame.Rect(0, 0, 10, 720),  # Pared izquierda
     pygame.Rect(1270, 0, 10, 720),  # Pared derecha
 ]
@@ -49,8 +49,7 @@ diagonal_platforms = [
     DiagonalPlatform(350, 650, 450, 550),
     DiagonalPlatform(570, 730, 800, 500),
     DiagonalPlatform(0, 700, 60, 630),
-    DiagonalPlatform(1070, 500, 1170, 600),
-    DiagonalPlatform(1180, 550, 1270, 650),
+    DiagonalPlatform(1060, 500, 1170, 600),
 ]
 
 
