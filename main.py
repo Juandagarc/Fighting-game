@@ -1,49 +1,57 @@
 import pygame
+import os
 from views.menu import render_menu
 from views.instructions import render_instructions
 from views.game import render_game
 
+# Inicializar Pygame
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("Fighting Game")  # Set the window title
+pygame.display.set_caption("Fighting Game")
 clock = pygame.time.Clock()
-running = True
 
-# Control state (menu, instructions, or game)
+# Cargar recursos (sprites, sonidos, etc.)
+current_dir = os.path.dirname(__file__)
+
+player1_sprite_sheet = pygame.image.load(os.path.join(current_dir, "assets/game/samurai/IDLE.png")).convert_alpha()
+player2_sprite_sheet = pygame.image.load(os.path.join(current_dir, "assets/game/samurai/IDLE.png")).convert_alpha()
+
+# Control del estado del juego
+running = True
 current_view = "menu"
 
 while running:
-    # Poll for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:  # Handle button clicks
+        if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = event.pos
 
             if current_view == "menu":
-                buttons = render_menu(screen)  # Get the buttons from the menu
+                buttons = render_menu(screen)
                 for button in buttons:
-                    if button["rect"].collidepoint(mouse_pos):  # Check if a button is clicked
+                    if button["rect"].collidepoint(mouse_pos):
                         if button["text"] == "Jugar":
-                            current_view = "game"  # Switch to game view
+                            current_view = "game"
                         elif button["text"] == "Cómo se juega":
-                            current_view = "instructions"  # Switch to instructions view
+                            current_view = "instructions"
                         elif button["text"] == "Salir":
-                            running = False  # Exit the game
+                            running = False
 
             elif current_view == "instructions":
-                back_button = render_instructions(screen)  # Get the back button
-                if back_button.collidepoint(mouse_pos):  # Check if the back button is clicked
-                    current_view = "menu"  # Return to the menu
+                back_button = render_instructions(screen)
+                if back_button.collidepoint(mouse_pos):
+                    current_view = "menu"
 
-    # Render the current view
+    # Renderizar la vista actual
     if current_view == "menu":
         render_menu(screen)
     elif current_view == "instructions":
         render_instructions(screen)
     elif current_view == "game":
-        render_game(screen)
+        # Pasar las hojas de sprites a render_game
+        render_game(screen, player1_sprite_sheet, player2_sprite_sheet)
 
     pygame.display.flip()
     clock.tick(60)
