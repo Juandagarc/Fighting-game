@@ -218,3 +218,5 @@ class Player:
         bar_y = self.rect.top - health_bar_height - 5
         pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, health_bar_width, health_bar_height))
         pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, health_bar_width * health_ratio, health_bar_height))
+        # Dibujar la hitbox (opcional, para depuración)
+        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)  # Borde rojo
