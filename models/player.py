@@ -17,6 +17,8 @@ class Player:
         self.health = 100
         self.is_attacking = False
         self.is_defending = False
+        self.attack_cooldown = 500  # En milisegundos (0.5 segundos)
+        self.last_attack_time = 0  # Marca de tiempo del último ataque
 
     def move(self, keys, colliders):
         """
@@ -55,21 +57,29 @@ class Player:
         for platform in diagonal_platforms:
             # Check bottom-left corner
             platform_y_left = platform.get_y_at_x(self.rect.left)
-            if platform.contains_x(self.rect.left) and platform_y_left is not None:
-                if self.rect.bottom >= platform_y_left - 1:  # Slight tolerance for touch
-                    self.rect.bottom = platform_y_left - 1  # Align to the ramp
-                    self.y_velocity = 0
-                    self.on_ground = True
-                    return
+            if (
+                    platform.contains_x(self.rect.left)
+                    and platform_y_left is not None
+                    and self.rect.bottom >= platform_y_left - 5  # Tolerance to align with ramp
+                    and self.rect.bottom <= platform_y_left + 10  # Ensure no snapping from below
+            ):
+                self.rect.bottom = platform_y_left
+                self.y_velocity = 0
+                self.on_ground = True
+                return
 
             # Check bottom-right corner
             platform_y_right = platform.get_y_at_x(self.rect.right)
-            if platform.contains_x(self.rect.right) and platform_y_right is not None:
-                if self.rect.bottom >= platform_y_right - 1:  # Slight tolerance for touch
-                    self.rect.bottom = platform_y_right - 1  # Align to the ramp
-                    self.y_velocity = 0
-                    self.on_ground = True
-                    return
+            if (
+                    platform.contains_x(self.rect.right)
+                    and platform_y_right is not None
+                    and self.rect.bottom >= platform_y_right - 5  # Tolerance to align with ramp
+                    and self.rect.bottom <= platform_y_right + 10  # Ensure no snapping from below
+            ):
+                self.rect.bottom = platform_y_right
+                self.y_velocity = 0
+                self.on_ground = True
+                return
 
         # If no collisions, player is in the air
         self.on_ground = False
@@ -98,9 +108,14 @@ class Player:
 
     def attack(self, keys):
         """
-        Handles the player's attack action.
+        Handles the player's attack action with cooldown.
         """
-        self.is_attacking = keys[self.controls["attack"]]
+        current_time = pygame.time.get_ticks()  # Tiempo actual en milisegundos
+        if keys[self.controls["attack"]] and current_time - self.last_attack_time > self.attack_cooldown:
+            self.is_attacking = True
+            self.last_attack_time = current_time
+        else:
+            self.is_attacking = False
 
     def defend(self, keys):
         """
@@ -114,7 +129,7 @@ class Player:
         """
         if not self.is_defending:
             self.health -= amount
-            if self.health < 0:
+            if self.health < 0:  # Asegura que no sea negativo
                 self.health = 0
 
     def is_defeated(self):
@@ -135,6 +150,8 @@ class Player:
         health_ratio = self.health / 100
         pygame.draw.rect(screen, (255, 0, 0), (self.rect.x, self.rect.y - 15, health_bar_width, health_bar_height))
         pygame.draw.rect(screen, (0, 255, 0), (self.rect.x, self.rect.y - 15, health_bar_width * health_ratio, health_bar_height))
+
+
 
 class DiagonalPlatform:
     def __init__(self, x1, y1, x2, y2):
