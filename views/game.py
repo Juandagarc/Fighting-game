@@ -64,6 +64,7 @@ def handle_combat(player1, player2):
         player1.take_damage(10)  # Reduce la salud del jugador 1
 
 
+
 def render_colliders(screen, colliders, diagonal_platforms):
     """
     Renderizar colisionadores para propósitos de depuración.
@@ -75,7 +76,7 @@ def render_colliders(screen, colliders, diagonal_platforms):
         pygame.draw.line(screen, (0, 255, 255), (platform.x1, platform.y1), (platform.x2, platform.y2), 1)
 
 
-def render_game(screen, player1_sprite_sheet, player2_sprite_sheet):
+def render_game(screen, player1_sprites, player2_sprites):
     """
     Renderizar la vista del juego.
     """
@@ -84,7 +85,7 @@ def render_game(screen, player1_sprite_sheet, player2_sprite_sheet):
     player1 = Player(
         x=1130,
         y=300,
-        sprite_sheet=player1_sprite_sheet,
+        sprite_sheets=player1_sprites,
         controls=player1_controls,
         frame_width=96,  # Ancho de un fotograma
         frame_height=96,  # Alto de un fotograma
@@ -94,7 +95,7 @@ def render_game(screen, player1_sprite_sheet, player2_sprite_sheet):
     player2 = Player(
         x=100,
         y=300,
-        sprite_sheet=player2_sprite_sheet,
+        sprite_sheets=player2_sprites,
         controls=player2_controls,
         frame_width=96,  # Ancho de un fotograma
         frame_height=96,  # Alto de un fotograma
@@ -115,17 +116,20 @@ def render_game(screen, player1_sprite_sheet, player2_sprite_sheet):
         keys = pygame.key.get_pressed()
 
         # Actualizar jugadores
+        player1.update_state(keys)
+        player1.attack(keys)  # Detectar ataque
+        player1.jump(keys)
         player1.move(keys, colliders)
         player1.apply_gravity(colliders, diagonal_platforms)
-        player1.jump(keys)
-        player1.defend(keys)
-        player1.attack(keys)
 
+        player1.update_animation()
+        player2.update_animation()
+
+        player2.update_state(keys)
+        player2.attack(keys)  # Detectar ataque
+        player2.jump(keys)
         player2.move(keys, colliders)
         player2.apply_gravity(colliders, diagonal_platforms)
-        player2.jump(keys)
-        player2.defend(keys)
-        player2.attack(keys)
 
         # Manejar combate
         handle_combat(player1, player2)

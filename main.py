@@ -13,8 +13,20 @@ clock = pygame.time.Clock()
 # Cargar recursos (sprites, sonidos, etc.)
 current_dir = os.path.dirname(__file__)
 
-player1_sprite_sheet = pygame.image.load(os.path.join(current_dir, "assets/game/samurai/IDLE.png")).convert_alpha()
-player2_sprite_sheet = pygame.image.load(os.path.join(current_dir, "assets/game/samurai/IDLE.png")).convert_alpha()
+# Cargar hojas de sprites para los diferentes estados de los jugadores
+player1_sprites = {
+    "idle": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/IDLE.png")).convert_alpha(),
+    "running": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/RUN.png")).convert_alpha(),
+    "jumping": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/RUN.png")).convert_alpha(),
+    "attacking": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/ATTACK.png")).convert_alpha(),
+}
+
+player2_sprites = {
+    "idle": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/IDLE.png")).convert_alpha(),
+    "running": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/RUN.png")).convert_alpha(),
+    "jumping": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/RUN.png")).convert_alpha(),
+    "attacking": pygame.image.load(os.path.join(current_dir, "assets/game/samurai/ATTACK.png")).convert_alpha(),
+}
 
 # Control del estado del juego
 running = True
@@ -50,8 +62,8 @@ while running:
     elif current_view == "instructions":
         render_instructions(screen)
     elif current_view == "game":
-        # Pasar las hojas de sprites a render_game
-        render_game(screen, player1_sprite_sheet, player2_sprite_sheet)
+        # Pasar las hojas de sprites de todos los estados a render_game
+        render_game(screen, player1_sprites, player2_sprites)
 
     pygame.display.flip()
     clock.tick(60)
