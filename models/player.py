@@ -338,3 +338,18 @@ class Player:
 
         # Dibujar la hitbox (opcional, para depuración)
         pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)  # Borde rojo
+
+        # Dibujar barra de vida
+        health_bar_width = 50  # Ancho de la barra de vida
+        health_bar_height = 8  # Alto de la barra de vida
+        health_ratio = self.health / 100  # Proporción de salud actual
+
+        # Coordenadas de la barra de vida
+        bar_x = self.rect.centerx - health_bar_width // 2
+        bar_y = self.rect.top - health_bar_height - 5  # Posición encima del jugador
+
+        # Fondo de la barra (rojo)
+        pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, health_bar_width, health_bar_height))
+
+        # Salud actual (verde)
+        pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, health_bar_width * health_ratio, health_bar_height))
