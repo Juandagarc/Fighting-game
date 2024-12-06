@@ -36,16 +36,22 @@ class Player:
         self.animation_speed = animation_speed
         self.frame_counter = 0
 
+
     def _load_frames(self, sprite_sheet):
         """
-        Extract individual frames from a sprite sheet.
+        Extract individual frames from a sprite sheet and scale them up to twice their size.
         """
         sheet_width = sprite_sheet.get_width()
         frames = []
 
         for x in range(0, sheet_width, self.frame_width):
+            # Extract the frame
             frame = sprite_sheet.subsurface((x, 0, self.frame_width, self.frame_height))
-            frames.append(frame)
+
+            # Scale the frame to twice its size
+            scaled_frame = pygame.transform.scale(frame, (self.frame_width * 2, self.frame_height * 2))
+
+            frames.append(scaled_frame)
 
         return frames
 
@@ -214,7 +220,7 @@ class Player:
 
         # Dibujar el fotograma
         sprite_x = self.rect.centerx - frame.get_width() // 2
-        sprite_y = self.rect.bottom - frame.get_height()
+        sprite_y = self.rect.bottom - frame.get_height() + 40
         screen.blit(frame, (sprite_x, sprite_y))
 
         # Dibujar barra de vida
@@ -226,4 +232,4 @@ class Player:
         pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, health_bar_width, health_bar_height))
         pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, health_bar_width * health_ratio, health_bar_height))
         # Dibujar la hitbox (opcional, para depuración)
-        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)  # Borde rojo
+        #  pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)  # Borde rojo

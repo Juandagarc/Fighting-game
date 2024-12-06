@@ -139,7 +139,7 @@ def render_game(screen, player1_sprites, player2_sprites):
         player2.draw(screen)
 
         # Dibujar colisionadores (depuración)
-        render_colliders(screen, colliders, diagonal_platforms)
+        # render_colliders(screen, colliders, diagonal_platforms)
 
         # Verificar si alguno de los jugadores ha sido derrotado
         if player1.is_defeated():
